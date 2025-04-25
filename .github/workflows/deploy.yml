@@ -1,0 +1,29 @@
+name: Web临时挂载器
+on:
+  workflow_dispatch:
+    inputs:
+      website_code:
+        description: '请输入网站代码'
+        required: true
+        default: '<h1>Hello World</h1>'
+        type: string
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+    - name: 创建HTML文件
+      run: |
+        echo !${{ github.event.inputs.website_code }}! > index.html
+        echo [挂载成功] 生成文件：index.html
+
+    - name: 部署到GitHub Pages
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        branch: gh-pages
+        folder: ./
+        clean: true
+
+    - name: 显示访问链接
+      run: |
+        echo "访问地址：https://$(echo $GITHUB_REPOSITORY | cut -d'/' -f2-).github.io/"
