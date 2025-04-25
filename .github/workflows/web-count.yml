@@ -1,0 +1,39 @@
+# .github/workflows/web-mount.yml
+name: Web Page Mounter
+on:
+  workflow_dispatch:  # 允许手动触发
+    inputs:
+      html_content:
+        description: '输入HTML代码'
+        required: true
+        default: '<h1>Hello World</h1>'
+      page_title:
+        description: '页面标题'
+        required: false
+        default: '临时页面'
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Generate HTML
+        run: |
+          echo "<!DOCTYPE html>
+<html>
+<head>
+<title>${{ github.event.inputs.page_title }}</title>
+</head>
+<body>
+${{ github.event.inputs.html_content }}
+</body>
+</html>" > index.html
+
+      - name: Deploy to Pages
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: ./
+          clean: true
